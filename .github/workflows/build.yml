@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  build:
+  images:
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -15,8 +15,6 @@ jobs:
         include:
           - name: qinglong
             dockerfile: images/qinglong/Dockerfile
-          - name: device-harvest
-            dockerfile: images/device-harvest/Dockerfile
           - name: omniroute
             dockerfile: images/omniroute/Dockerfile
     steps:
@@ -36,3 +34,34 @@ jobs:
           file: ${{ matrix.dockerfile }}
           push: true
           tags: ghcr.io/sunshaoan0808/${{ matrix.name }}-patched:latest
+
+  device-harvest:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Checkout public device-harvest source
+        uses: actions/checkout@v4
+        with:
+          repository: tangsong404/whale2api
+          path: src
+
+      - run: cp images/device-harvest/Dockerfile src/tools/device-harvest/Dockerfile.patched
+
+      - uses: docker/setup-buildx-action@v3
+
+      - uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: sunshaoan0808
+          password: ${{ secrets.GH_PAT }}
+
+      - uses: docker/build-push-action@v6
+        with:
+          context: src/tools/device-harvest
+          file: src/tools/device-harvest/Dockerfile.patched
+          push: true
+          tags: ghcr.io/sunshaoan0808/device-harvest:latest
