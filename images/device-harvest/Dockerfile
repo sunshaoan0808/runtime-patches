@@ -3,8 +3,8 @@
 FROM mcr.microsoft.com/playwright:v1.63.0-noble
 
 ARG NODE_VERSION=24.22.1
-RUN curl -fsSL https://nodejs.org/dist/v${NODE_VERSION}/node-v${NODE_VERSION}-linux-x64.tar.xz \
-      | tar -xJ -C /usr/local --strip-components=1 \
+RUN curl -fsSL https://nodejs.org/dist/v${NODE_VERSION}/node-v${NODE_VERSION}-linux-x64.tar.gz \
+      | tar -xz -C /usr/local --strip-components=1 \
  && node -v && npm -v
 
 ENV PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=1 \
